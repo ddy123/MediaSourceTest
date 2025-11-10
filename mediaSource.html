@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>videoTest</title>
+    </head>
+
+    <body>
+        <div>
+            <video id="video" style="height: 450px; width: 800px;" controls></video>
+        </div>
+         <div>
+            <button id="video_0" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v11/init-stream_0.m4s')">video_0</button>
+            <button id="video_1" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00001.m4s')">video_1</button>
+            <button id="video_2" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00002.m4s')">video_2</button>
+            <button id="video_3" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00003.m4s')">video_3</button>
+            <button id="video_4" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00004.m4s')">video_4</button>
+            <button id="video_5" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00005.m4s')">video_5</button>
+            <button id="video_6" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00006.m4s')">video_6</button>
+            <button id="video_7" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00007.m4s')">video_7</button>
+            <button id="video_8" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00008.m4s')">video_8</button>
+            <button id="audio_0" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v11/init-stream_12.m4s')">audio_0</button>
+            <button id="audio_1" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_12-00001.m4s')">audio_1</button>
+            <button id="audio_2" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_12-00002.m4s')">audio_2</button>
+            <button id="audio_3" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_12-00003.m4s')">audio_3</button>
+            <button id="audio_4" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_12-00004.m4s')">audio_4</button>
+            <button id="audio_5" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_12-00005.m4s')">audio_5</button>
+            <button id="audio_6" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_12-00006.m4s')">audio_6</button>
+            <button id="audio_7" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_12-00007.m4s')">audio_7</button>
+            <button id="audio_8" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_12-00008.m4s')">audio_8</button>
+            <button id="audio_9" type="button" onclick="play()">play</button>
+            <button id="audio_10" type="button" onclick="pause()">pause</button>
+            <button id="audio_11" type="button" onclick="add()">add</button>
+        </div> 
+
+        <script>
+            function play(){
+                video.play()
+            }
+            function pause(){
+                video.pause()
+            }
+            function add(){
+                sourceBuffer1.appendBuffer(new ArrayBuffer())
+                sourceBuffer2.appendBuffer(new ArrayBuffer())
+            }
+             var sourceBuffer1
+            var sourceBuffer2
+
+            function segmentAppend1 (url) {
+                fetchBuffer(url, buffer => {
+                        sourceBuffer1.appendBuffer(buffer)
+                        console.log(mediaSource)
+                        console.log(sourceBuffer1)
+                })
+            }
+
+            function segmentAppend2 (url) {
+                fetchBuffer(url, buffer => {
+                        sourceBuffer2.appendBuffer(buffer)
+                        console.log(mediaSource)
+                        console.log(sourceBuffer2)
+                        let buffered=sourceBuffer2.buffered
+                        console.log(buffered.length)
+                        console.log(buffered.end(0))
+                })
+            }
+
+             function fetchBuffer (url, callback) {
+                var xhr = new XMLHttpRequest;
+                xhr.open('get', url);
+                xhr.responseType = 'arraybuffer';
+                xhr.onload = function () {
+                    callback(xhr.response);
+                };
+                xhr.send();
+            }
+
+           var mediaSource=new MediaSource()
+           var video=document.getElementById('video')
+           video.src=URL.createObjectURL(mediaSource)
+            mediaSource.addEventListener('sourceopen',sourceopen)
+           function sourceopen(){
+            console.log(mediaSource)
+            var mime1 = 'video/mp4; codecs="avc1.640028"'
+            var mime2 = 'audio/mp4; codecs="mp4a.40.2"'
+            sourceBuffer1 = mediaSource.addSourceBuffer(mime1)
+            sourceBuffer2 = mediaSource.addSourceBuffer(mime2)
+          /*   fetchBuffer('http://127.0.0.1:5503/demosForTest/v11/init-stream_0.m4s', buffer => {
+                        sourceBuffer1.appendBuffer(buffer)
+                        //console.log(sourceBuffer1.buffered.length)
+                })
+                 setTimeout(()=>{fetchBuffer('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00001.m4s', buffer => {
+                        sourceBuffer1.appendBuffer(buffer)
+                        //console.log(sourceBuffer1.buffered.length)
+                        console.log(sourceBuffer1)
+                })},3000) 
+            console.log(mediaSource) */
+              sourceBuffer1.addEventListener('updateend',()=>{
+            console.log('add buffer to video')
+            //sourceBuffer1.appendBuffer()
+            fetchBuffer('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00001.m4s', buffer => {
+                        sourceBuffer1.appendBuffer(buffer)
+                        //console.log(sourceBuffer1.buffered.length)
+                })
+           })
+           sourceBuffer2.addEventListener('updateend',()=>{
+            console.log('add buffer to audio') 
+            //sourceBuffer2.appendBuffer()
+            fetchBuffer('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_12-00001.m4s', buffer => {
+                        sourceBuffer2.appendBuffer(buffer)
+                        //console.log(sourceBuffer1.buffered.length)
+                })
+           })
+           } 
+         
+
+/*                    mediaSource.addEventListener('sourceopen', () => {
+       sourceBuffer1 = mediaSource.addSourceBuffer(
+        'video/mp4; codecs="avc1.640028"'
+    );  
+     sourceBuffer2 = mediaSource.addSourceBuffer(
+        'audio/mp4; codecs="mp4a.40.2"'
+    ); 
+    console.log(mediaSource)
+ fetchBuffer('http://127.0.0.1:5503/demosForTest/v11/init-stream_0.m4s', buffer => {
+                        sourceBuffer1.appendBuffer(buffer)
+                        //console.log(sourceBuffer1.buffered.length)
+                }) 
+                  setTimeout(()=>{fetchBuffer('http://127.0.0.1:5503/demosForTest/v11/chunk-stream_0-00001.m4s', buffer => {
+                        sourceBuffer1.appendBuffer(buffer)
+                        //console.log(sourceBuffer1.buffered.length)
+                        console.log(111)
+                })},3000)  
+                
+    //console.log(sourceBuffer1.buffered.length)
+
+}); */
+        </script>
+    </body>
+
+</html>
