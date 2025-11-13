@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Three.js App</title>
+    <style>
+        body { margin: 0; }
+        /* 渲染器会自动创建 canvas 并加入页面 */
+    </style>
+</head>
+<body>
+    <!-- 容器可选，渲染器默认会将 canvas 附加到 body -->
+    <div id="app"></div>
+    <script type="module" src="./cmp.js"></script>
+<!--     <script type="importmap">
+  {
+    "imports": {
+      "three": "../../node_modules/three/build/three.module.js",
+      "three/addons/": "../../node_modules/three/examples/jsm/"
+    }
+  } -->
+<script type="importmap">
+  {
+    "imports": {
+      "three": "../../node_modules/three/build/three.module.js",
+      "three/addons/": "../../node_modules/three/examples/jsm/"
+    }
+  }
+</script>
+
+</body>
+</html>

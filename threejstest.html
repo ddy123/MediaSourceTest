@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js 交互式立方体演示</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #container {
+            position: relative;
+            width: 90vw;
+            height: 80vh;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            z-index: 100;
+            pointer-events: none;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            padding: 0 20px;
+        }
+        #info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            z-index: 100;
+            pointer-events: none;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 0 20px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        canvas {
+            display: block;
+            cursor: grab;
+        }
+        canvas:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="info">
+            <h1>Three.js 交互式立方体</h1>
+            <p>拖拽鼠标旋转立方体，滚动鼠标缩放视图</p>
+        </div>
+        <div id="controls">
+            <p>← 拖拽旋转 | 滚轮缩放 →</p>
+        </div>
+    </div>
+
+    <!-- 引入Three.js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // 当页面加载完成后执行
+        window.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            // 获取容器元素
+            const container = document.getElementById('container');
+            
+            // 创建场景
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x111122);
+            
+            // 创建相机
+            const camera = new THREE.PerspectiveCamera(
+                60, // 视野角度
+                container.clientWidth / container.clientHeight, // 宽高比
+                0.1, // 近截面
+                1000 // 远截面
+            );
+            camera.position.z = 8;
+            
+            // 创建WebGL渲染器
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+            
+            // 创建立方体几何体
+            const geometry = new THREE.BoxGeometry(2, 2, 2);
+            
+            // 创建材质 - 使用多种颜色
+            const materials = [
+                new THREE.MeshStandardMaterial({ color: 0xff3e3e, metalness: 0.3, roughness: 0.4 }), // 右 - 红色
+                new THREE.MeshStandardMaterial({ color: 0x3eff3e, metalness: 0.3, roughness: 0.4 }), // 左 - 绿色
+                new THREE.MeshStandardMaterial({ color: 0x3e3eff, metalness: 0.3, roughness: 0.4 }), // 上 - 蓝色
+                new THREE.MeshStandardMaterial({ color: 0xffff3e, metalness: 0.3, roughness: 0.4 }), // 下 - 黄色
+                new THREE.MeshStandardMaterial({ color: 0xff3eff, metalness: 0.3, roughness: 0.4 }), // 前 - 紫色
+                new THREE.MeshStandardMaterial({ color: 0x3effff, metalness: 0.3, roughness: 0.4 })  // 后 - 青色
+            ];
+            
+            // 创建立方体网格对象
+            const cube = new THREE.Mesh(geometry, materials);
+            scene.add(cube);
+            
+            // 添加环境光
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            // 添加方向光
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+            
+            // 添加点光源
+            const pointLight = new THREE.PointLight(0xffffff, 0.5);
+            pointLight.position.set(-5, -5, 5);
+            scene.add(pointLight);
+            
+            // 添加坐标轴辅助工具
+            const axesHelper = new THREE.AxesHelper(3);
+            scene.add(axesHelper);
+            
+            // 添加网格辅助工具
+            const gridHelper = new THREE.GridHelper(10, 10);
+            scene.add(gridHelper);
+            
+            // 处理窗口大小变化
+            window.addEventListener('resize', onWindowResize);
+            
+            function onWindowResize() {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+            
+            // 鼠标控制变量
+            let isMouseDown = false;
+            let previousMousePosition = {
+                x: 0,
+                y: 0
+            };
+            
+            // 鼠标按下事件
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                isMouseDown = true;
+            });
+            
+            // 鼠标释放事件
+            window.addEventListener('mouseup', () => {
+                isMouseDown = false;
+            });
+            
+            // 鼠标移动事件
+            renderer.domElement.addEventListener('mousemove', (e) => {
+                // 计算鼠标移动的增量
+                const deltaMove = {
+                    x: e.offsetX - previousMousePosition.x,
+                    y: e.offsetY - previousMousePosition.y
+                };
+                
+                if (isMouseDown) {
+                    // 根据鼠标移动旋转立方体
+                    cube.rotation.y += deltaMove.x * 0.01;
+                    cube.rotation.x += deltaMove.y * 0.01;
+                }
+                
+                // 更新之前的鼠标位置
+                previousMousePosition = {
+                    x: e.offsetX,
+                    y: e.offsetY
+                };
+            });
+            
+            // 鼠标滚轮缩放
+            renderer.domElement.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                // 根据滚轮方向调整相机距离
+                camera.position.z += e.deltaY * 0.01;
+                // 限制相机距离范围
+                camera.position.z = Math.max(3, Math.min(20, camera.position.z));
+            });
+            
+            // 动画循环函数
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // 不再自动旋转立方体
+                // 立方体旋转现在由鼠标控制
+                
+                // 轻微浮动效果
+                cube.position.y = Math.sin(Date.now() * 0.001) * 0.2;
+                
+                // 渲染场景
+                renderer.render(scene, camera);
+            }
+            
+            // 开始动画循环
+            animate();
+        }
+    </script>
+</body>
+</html>

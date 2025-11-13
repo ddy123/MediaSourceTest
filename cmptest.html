@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Three.js App</title>
+    <style>
+        body { margin: 0; }
+        /* 渲染器会自动创建 canvas 并加入页面 */
+    </style>
+</head>
+<body>
+    <!-- 容器可选，渲染器默认会将 canvas 附加到 body -->
+    <div id="app"></div>
+    <script type="module" src="./cmp.js"></script>
+</body>
+<script type="module" src="./node_modules/three/build/three.module.js"></script>
+
+<script type="module" src="./node_modules/three/examples/jsm/controls/OrbitControls.js"></script>
+<script>
+//import * as THREE from "./node_modules/three/build/three.module.js";
+const scene = new Scene()
+const loader = new CubeTextureLoader()
+loader.setPath('./img')
+const textureCube = loader.load([
+	'posx.jpg',
+	'negx.jpg',
+	'posy.jpg',
+	'negy.jpg',
+	'posz.jpg',
+	'negz.jpg',
+])
+scene.background = textureCube
+const camera = new PerspectiveCamera(
+	75,
+	window.innerWidth / window.innerHeight,
+	0.1,
+	1000
+)
+const renderer = new WebGLRenderer({ antialias: true })
+const controls = new OrbitControls(camera, renderer.domElement)
+function init() {
+	camera.position.set(0, 0, 5)
+	renderer.setSize(window.innerWidth, window.innerHeight)
+	document.body.appendChild(renderer.domElement)
+	controls.update()
+	function animate() {
+		requestAnimationFrame(animate)
+		controls.update()
+		renderer.render(scene, camera)
+	}
+	animate()
+}
+init()
+
+
+</script>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Three.js 全局变量</title>
+</head>
+<body>
+    <!-- 引入 three.js 全局版本 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+    
+    <script>
+        // 现在 THREE 是全局变量，不需要 import 或 require
+        console.log('Three.js 版本:', THREE.REVISION);
+        
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        // ... 其余代码
+    </script>
+</body>
+</html>
