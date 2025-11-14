@@ -4,52 +4,101 @@
 
     <head>
         <title>videoTest</title>
+         <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>  
+         <style>
+        /* 限制A-Frame场景大小 */
+        a-scene {
+            width: 800px;   /* 自定义宽度 */
+            height: 600px;  /* 自定义高度 */
+            margin: 20px auto;  /* 居中显示 */
+            border: 2px solid #333; /* 边框区分 */
+            box-shadow: 0 0 10px rgba(0,0,0,0.3); /* 阴影增强视觉效果 */
+        }
+        #video {
+            /* 将视频画面移出可视区域（只隐藏画面，控件仍保留） */
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            /* 确保控件有足够高度显示（控件高度约40px） */
+            height: 40px;
+            width: 800px; /* 与场景宽度一致，控件居中 */
+        }
+
+        /* 控制条容器（让控件显示在场景上方） */
+        #controls-container {
+            width: 800px;
+            margin: 0 auto;
+            position: relative; /* 确保控件定位正确 */
+        }
+    </style>
+    
     </head>
 
     <body>
        <div>
             <!-- display: none; -->
-            <video id="video" style="height: 450px; width: 800px;" controls autoplay></video>
+            <!-- <video id="video" style="height: 450px; width: 800px;" controls autoplay></video> -->
+        <!--      <a-scene>
+
+			<a-assets>
+			  	<video id="video" preload="auto" autoplay loop="false" crossOrigin="anonymous" controls style="height: 450px; width: 800px;"></video>
+			</a-assets>
+
+            <a-videosphere rotation="0 -90 0" src="#video" radius="5000" segments-height="256" segments-width="256"></a-videosphere>
+
+			<a-entity camera position wasd-controls="acceleration:1000" rotation look-controls aframe-injected rotation-reader-camera></a-entity>
+
+		</a-scene>  -->
+        <div id="controls-container">
+             
         </div>
-            <!-- <canvas id="canvas" width="500" height="500" style="border:1px" >canvas</canvas> -->
+        
+         <a-scene embedded>
+        <a-assets>
+			  <video 
+                id="video" 
+                preload="auto" 
+                autoplay 
+                loop="false" 
+                crossOrigin="anonymous" 
+                controls 
+                style="height: 450px; width: 800px;"
+            ></video>
+		</a-assets>
+        <a-videosphere 
+            rotation="0 -90 0" 
+            src="#video" 
+            radius="5000" 
+            segments-height="256" 
+            segments-width="256"
+        ></a-videosphere>
+
+        <a-entity 
+            camera 
+            position="0 1.6 0"  
+            wasd-controls="acceleration:1000" 
+            look-controls 
+            rotation-reader-camera
+        ></a-entity>
+    </a-scene>
+        </div>
             <canvas id="myCanvas" width="350" height="350" style="border:1px solid #d3d3d3;"></canvas>
          <div>
-              <button id="video_0" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/init-stream_0.m4s')">video_0</button>
-            <button id="video_1" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00001.m4s')">video_1</button>
-            <button id="video_2" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00002.m4s')">video_2</button>
-            <button id="video_3" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00003.m4s')">video_3</button>
-            <button id="video_4" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00004.m4s')">video_4</button>
-            <button id="video_5" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00005.m4s')">video_5</button>
-            <button id="video_6" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00006.m4s')">video_6</button>
-            <button id="video_7" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00007.m4s')">video_7</button>
-            <button id="video_8" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00008.m4s')">video_8</button>
-            <button id="audio_0" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/init-stream_12.m4s')">audio_0</button>
-            <button id="audio_1" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00001.m4s')">audio_1</button>
-            <button id="audio_2" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00002.m4s')">audio_2</button>
-            <button id="audio_3" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00003.m4s')">audio_3</button>
-            <button id="audio_4" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00004.m4s')">audio_4</button>
-            <button id="audio_5" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00005.m4s')">audio_5</button>
-            <button id="audio_6" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00006.m4s')">audio_6</button>
-            <button id="audio_7" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00007.m4s')">audio_7</button>
-            <button id="audio_8" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00008.m4s')">audio_8</button>  
-        <!--        <button id="video_0" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/init-stream_0.m4s')">video_0</button>
+              <button id="video_0" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/init-stream_0.m4s')">video_0</button>
             <button id="video_1" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00001.m4s')">video_1</button>
             <button id="video_2" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00002.m4s')">video_2</button>
-            <button id="video_3" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00003.m4s')">video_3</button>
+          <!--   <button id="video_3" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00003.m4s')">video_3</button>
             <button id="video_4" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00004.m4s')">video_4</button>
             <button id="video_5" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00005.m4s')">video_5</button>
             <button id="video_6" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00006.m4s')">video_6</button>
             <button id="video_7" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00007.m4s')">video_7</button>
-            <button id="video_8" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00008.m4s')">video_8</button>
-            <button id="audio_0" type="button" onclick="segmentAppend2('https://222.20.126.228:81/videos/flowers/output/init-stream_12.m4s')">audio_0</button>
-            <button id="audio_1" type="button" onclick="segmentAppend2('https://222.20.126.228:81/videos/flowers/output/chunk-stream_12-00001.m4s')">audio_1</button>
-            <button id="audio_2" type="button" onclick="segmentAppend2('https://222.20.126.228:81/videos/flowers/output/chunk-stream_12-00002.m4s')">audio_2</button>
-            <button id="audio_3" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00003.m4s')">audio_3</button>
-            <button id="audio_4" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00004.m4s')">audio_4</button>
-            <button id="audio_5" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00005.m4s')">audio_5</button>
-            <button id="audio_6" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00006.m4s')">audio_6</button>
-            <button id="audio_7" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00007.m4s')">audio_7</button>
-            <button id="audio_8" type="button" onclick="segmentAppend2('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_12-00008.m4s')">audio_8</button>  -->
+            <button id="video_8" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00008.m4s')">video_8</button> -->
+              <button id="video_3" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00003.m4s')">video_3</button>
+            <button id="video_4" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00004.m4s')">video_4</button>
+            <button id="video_5" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00005.m4s')">video_5</button>
+            <button id="video_6" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00006.m4s')">video_6</button>
+            <button id="video_7" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00007.m4s')">video_7</button>
+            <button id="video_8" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00008.m4s')">video_8</button>
             <button id="audio_9" type="button" onclick="play()">play</button>
             <button id="audio_10" type="button" onclick="pause()">pause</button>
             <button id="audio_11" type="button" onclick="add()">add</button>
@@ -115,9 +164,7 @@
            function sourceopen(){
             console.log(mediaSource)
             var mime1 = 'video/mp4; codecs="avc1.640028"'
-            var mime2 = 'audio/mp4; codecs="mp4a.40.2"'
             sourceBuffer1 = mediaSource.addSourceBuffer(mime1)
-            sourceBuffer2 = mediaSource.addSourceBuffer('audio/mp4; codecs="mp4a.40.2"')
           /*   fetchBuffer('http://127.0.0.1:5503/demosForTest/v11/init-stream_0.m4s', buffer => {
                         sourceBuffer1.appendBuffer(buffer)
                         //console.log(sourceBuffer1.buffered.length)

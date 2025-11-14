@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAC DASH 360° Player</title>
+    <!-- A-Frame核心库 -->
+    <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+    <!-- DASH播放库 -->
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    
+</head>
+<body>
+    <a-scene>
+        <!-- 资源定义区 -->
+        <a-assets>
+            <!-- 隐藏的视频元素（用于DASH流加载，EAC视频不需要显式展示） -->
+            <video 
+                id="video" 
+                preload="auto" 
+                autoplay 
+                loop 
+                crossOrigin="anonymous" 
+                playsinline
+                style="display: none;" 
+                style="height: 450px; width: 800px;"
+            ></video>
+        </a-assets>
+
+        <!-- 全景视频球体（EAC投影核心适配） -->
+        <a-videosphere 
+            id="eacSphere"
+            rotation="0 -90 0"  
+            src="#video" 
+            radius="5000"      
+            segments-width="512"  
+            segments-height="256" 
+        ></a-videosphere>
+
+        <!-- 相机与控制器（支持视角交互） -->
+        <a-entity 
+            camera 
+            position="0 1.6 0"  
+            look-controls        
+            wasd-controls="acceleration: 500"  
+            rotation-reader-camera
+        ></a-entity>
+    </a-scene>
+ <!--    <a-scene>
+
+			<a-assets>
+			  	<video id="video" preload="auto" autoplay loop="false" crossOrigin="anonymous" ></video>
+			</a-assets>
+
+            <a-videosphere rotation="0 -90 0" src="#video" radius="5000" segments-height="256" segments-width="256"></a-videosphere>
+
+			<a-entity camera position wasd-controls="acceleration:1000" rotation look-controls aframe-injected rotation-reader-camera></a-entity>
+
+		</a-scene> -->
+    <script>
+        // 初始化DASH播放和EAC投影适配
+        function init() {
+            // EAC格式的DASH流地址
+            const DASH_URL = 'http://127.0.0.1:5503/demosForTest/v1/stream.mpd';
+            //const DASH_URL = 'https://222.20.126.228:81/videos/flowers/output/stream.mpd'
+            // 获取视频元素
+            const video = document.getElementById('video'); 
+            // 初始化DASH播放器
+            const player = dashjs.MediaPlayer().create();
+            
+            // 配置EAC视频的DASH播放参数
+      /*       player.updateSettings({
+                'streaming': {
+                    'buffer': {
+                        'minBufferTime': 4,  // 增加缓冲时间，避免EAC高分辨率视频卡顿
+                        'maxBufferTime': 30
+                    }
+                }
+            }); */
+
+            // 加载DASH流
+            player.initialize(video, DASH_URL, false);
+
+            // 视频元数据加载完成后，确保EAC投影正确映射
+            video.addEventListener('loadedmetadata', () => {
+                console.log('EAC视频元数据加载完成，分辨率：', video.videoWidth, 'x', video.videoHeight);
+                // 对于EAC格式，可能需要调整球体旋转以匹配正确视角
+                document.getElementById('eacSphere').setAttribute('rotation', '0 -90 0');
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+        });
+
+        // 注册相机旋转监听组件（可选，用于调试EAC视角）
+        AFRAME.registerComponent('rotation-reader-camera', {
+            tick: function () {
+                const rotation = this.el.getAttribute('rotation');
+                // 控制台输出当前视角，方便调整EAC初始角度
+                // console.log('相机旋转角度：', rotation.x, rotation.y, rotation.z);
+            }
+        });
+    </script>
+</body>
+</html>

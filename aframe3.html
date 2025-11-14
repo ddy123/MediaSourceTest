@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>A-Frame 截图示例</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <style>
+        a-scene {
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+            border: 2px solid #333;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        #screenshotButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <button id="screenshotButton">点击截取当前视角</button>
+
+    <a-scene id="scene" embedded>
+        <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+        <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+        <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC658"></a-cylinder>
+        <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+        <a-sky color="#ECECEC"></a-sky>
+    </a-scene>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const scene = document.querySelector('#scene');
+            const screenshotButton = document.querySelector('#screenshotButton');
+            let isSceneReady = false; // 标记场景是否真的可以渲染了
+
+            // 核心改动：使用 requestAnimationFrame 确保在渲染后截图
+            function takeScreenshot() {
+                console.log('准备截图...');
+                // requestAnimationFrame 会把我们的函数加入浏览器的渲染队列
+                // 确保在画布上有内容之后再执行
+                requestAnimationFrame(() => {
+                    scene.canvas.toBlob(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'aframe-screenshot-' + Date.now() + '.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        
+                        console.log('截图已保存');
+                    });
+                });
+            }
+            
+            // A-Frame 场景加载完成事件
+            scene.addEventListener('loaded', function () {
+                console.log('A-Frame 场景资源加载完毕，等待渲染...');
+                isSceneReady = true;
+            });
+
+            // 按钮点击事件
+            screenshotButton.addEventListener('click', function() {
+                if (isSceneReady) {
+                    takeScreenshot();
+                } else {
+                    alert('场景尚未准备好，请稍候再试！');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

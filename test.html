@@ -1,19 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Three.js 全局变量</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>简化版EAC DASH全景播放器</title>
+  <!-- 引入依赖库 -->
+   <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>  
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+  <style>
+       /*  video {
+            width: 640px;
+            height: 360px;
+        } */
+    </style>
 </head>
 <body>
-    <!-- 引入 three.js 全局版本 -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+
+  <!-- <a-scene>
+
+     <a-videosphere id="panorama" rotation="0 180 0"></a-videosphere> 
     
-    <script>
-        // 现在 THREE 是全局变量，不需要 import 或 require
-        console.log('Three.js 版本:', THREE.REVISION);
+
+     <video  id="dashVideo" controls="true"></video>
+   </a-scene>  -->
+    <a-scene>
+
+			<a-assets>
+			  	<video id="video" preload="auto" autoplay loop="false" crossOrigin="anonymous" controls style="height: 200px; width: 300px;"></video>
+			</a-assets>
+
+            <a-videosphere rotation="0 -90 0" src="#video" radius="5000" segments-height="256" segments-width="256"></a-videosphere>
+
+			<a-entity camera position wasd-controls="acceleration:1000" rotation look-controls aframe-injected rotation-reader-camera></a-entity>
+
+		</a-scene> 
+       <!--  <video id="video" preload="auto" autoplay loop="false" crossOrigin="anonymous" controls style="height: 200px; width: 300px;"></video> -->
+  <script>
+    function init(){
+      
+    //const DASH_URL = 'https://222.20.126.228:81/videos/flowers/output/stream.mpd'
+      const DASH_URL ='http://127.0.0.1:5503/demosForTest/v1/stream.mpd';
+
+  
+      video = document.getElementById('video'); 
+
+    var player = dashjs.MediaPlayer().create();
+    player.initialize(video, DASH_URL, false);
         
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        // ... 其余代码
-    </script>
+    }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        init();
+       //document.getElementById('panorama').setAttribute('src', video);
+       console.log(video)
+        console.log(111)
+    }); 
+   
+  </script>
 </body>
 </html>
