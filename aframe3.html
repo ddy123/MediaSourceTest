@@ -24,15 +24,105 @@
 <body>
     <button id="screenshotButton">点击截取当前视角</button>
 
-    <a-scene id="scene" embedded>
-        <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-        <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-        <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC658"></a-cylinder>
-        <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-        <a-sky color="#ECECEC"></a-sky>
+     <a-scene id="scene" embedded>
+        <a-assets>
+			  <video 
+                id="video" 
+                preload="auto" 
+                autoplay 
+                loop="false" 
+                crossOrigin="anonymous" 
+                controls 
+                style="height: 450px; width: 800px;"
+            ></video>
+		</a-assets>
+        <a-videosphere 
+            rotation="0 -90 0" 
+            src="#video" 
+            radius="5000" 
+            segments-height="256" 
+            segments-width="256"
+        ></a-videosphere>
+
+        <a-entity 
+            camera 
+            position="0 1.6 0"  
+            wasd-controls="acceleration:1000" 
+            look-controls 
+            rotation-reader-camera
+        ></a-entity>
     </a-scene>
+        </div>
+            <canvas id="myCanvas" width="350" height="350" style="border:1px solid #d3d3d3;"></canvas>
+         <div>
+              <button id="video_0" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/init-stream_0.m4s')">video_0</button>
+            <button id="video_1" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00001.m4s')">video_1</button>
+            <button id="video_2" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00002.m4s')">video_2</button>
+          <!--   <button id="video_3" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00003.m4s')">video_3</button>
+            <button id="video_4" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00004.m4s')">video_4</button>
+            <button id="video_5" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00005.m4s')">video_5</button>
+            <button id="video_6" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00006.m4s')">video_6</button>
+            <button id="video_7" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00007.m4s')">video_7</button>
+            <button id="video_8" type="button" onclick="segmentAppend1('http://127.0.0.1:5503/demosForTest/v1/chunk-stream_0-00008.m4s')">video_8</button> -->
+              <button id="video_3" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00003.m4s')">video_3</button>
+            <button id="video_4" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00004.m4s')">video_4</button>
+            <button id="video_5" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00005.m4s')">video_5</button>
+            <button id="video_6" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00006.m4s')">video_6</button>
+            <button id="video_7" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00007.m4s')">video_7</button>
+            <button id="video_8" type="button" onclick="segmentAppend1('https://222.20.126.228:81/videos/flowers/output/chunk-stream_0-00008.m4s')">video_8</button>
+            <button id="audio_9" type="button" onclick="play()">play</button>
+            <button id="audio_10" type="button" onclick="pause()">pause</button>
+            <button id="audio_11" type="button" onclick="add()">add</button>
+        </div> 
 
     <script>
+        
+
+        var sourceBuffer1
+        var sourceBuffer2
+
+            function segmentAppend1 (url) {
+                fetchBuffer(url, buffer => {
+                        sourceBuffer1.appendBuffer(buffer)
+                        console.log(mediaSource)
+                        console.log(sourceBuffer1)
+                })
+            }
+
+            function segmentAppend2 (url) {
+                fetchBuffer(url, buffer => {
+                        sourceBuffer2.appendBuffer(buffer)
+                        console.log(mediaSource)
+                        console.log(sourceBuffer2)
+                        let buffered=sourceBuffer2.buffered
+                        console.log(buffered.length)
+                        console.log(buffered.end(0))
+                })
+            }
+
+             function fetchBuffer (url, callback) {
+                var xhr = new XMLHttpRequest;
+                xhr.open('get', url);
+                xhr.responseType = 'arraybuffer';
+                xhr.onload = function () {
+                    callback(xhr.response);
+                };
+                xhr.send();
+            }
+
+           var mediaSource=new MediaSource()
+           var video=document.getElementById('video')
+           video.src=URL.createObjectURL(mediaSource)
+            mediaSource.addEventListener('sourceopen',sourceopen)
+           function sourceopen(){
+            console.log(mediaSource)
+            var mime1 = 'video/mp4; codecs="avc1.640028"'
+            sourceBuffer1 = mediaSource.addSourceBuffer(mime1)
+           }
+
+/////////////////////////////////////////////////////////////////////////////////////
+/*                             捕获aframe当前fov                             */
+/////////////////////////////////////////////////////////////////////////////////////
         document.addEventListener('DOMContentLoaded', function () {
             const scene = document.querySelector('#scene');
             const screenshotButton = document.querySelector('#screenshotButton');
@@ -74,6 +164,86 @@
                 }
             });
         });
+
+        
+/////////////////////////////////////////////////////////////////////////////////////
+/*                             捕获video                             */
+/////////////////////////////////////////////////////////////////////////////////////
+ var canvas=document.getElementById('myCanvas');
+        var ctx=canvas.getContext('2d');
+        var isCapturing = false;
+        var captureInterval = null;
+        var frameCount = 0;
+
+         function play(){
+                video.play()
+            }
+            function pause(){
+                video.pause()
+            }
+            function add(){
+                sourceBuffer1.appendBuffer(new ArrayBuffer())
+                sourceBuffer2.appendBuffer(new ArrayBuffer())
+            }
+
+         video.addEventListener('play', () => {
+                    startCapture();
+                });
+                
+
+                video.addEventListener('pause', () => {
+                    stopCapture();
+                });
+                
+
+                video.addEventListener('ended', () => {
+                    stopCapture();
+                });
+var lastTime=-1;
+                var curTime=0;
+        function startCapture() {
+                if (isCapturing) return;
+                
+                console.log("currentTime:"+curTime)
+                isCapturing = true;
+                frameCount = 0;
+                
+                // 每秒捕获一帧
+                captureInterval = setInterval(() => {
+                    captureFrame();
+                }, 1000); // 1000ms = 1秒
+                
+                console.log('开始捕获视频帧');
+            }
+            
+         function   stopCapture() {
+                if (!isCapturing) return;
+                
+                isCapturing = false;
+                clearInterval(captureInterval);
+                console.log('停止捕获视频帧');
+            }
+            
+        function   captureFrame() {
+                if (video.paused || video.ended) {
+                    stopCapture();
+                    return;
+                }
+                curTime=video.currentTime;
+                console.log("LastTime:"+lastTime)
+                if(lastTime==curTime) return
+                lastTime=curTime;
+                try {
+                    // 绘制当前视频帧到canvas
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    frameCount++;
+                    console.log("frameCount:"+frameCount)
+                } catch (error) {
+                    console.error('捕获帧失败:', error);
+                }
+            }
+
     </script>
 </body>
 </html>
