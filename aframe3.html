@@ -121,16 +121,20 @@
            }
 
 /////////////////////////////////////////////////////////////////////////////////////
-/*                             捕获aframe当前fov                             */
+/*                             捕获aframe视频帧                             */
 /////////////////////////////////////////////////////////////////////////////////////
         document.addEventListener('DOMContentLoaded', function () {
-            const scene = document.querySelector('#scene');
+            //const scene = document.querySelector('#scene');
+             const scene = document.querySelector('a-scene');
+             alert(scene.hasLoaded)
             const screenshotButton = document.querySelector('#screenshotButton');
             let isSceneReady = false; // 标记场景是否真的可以渲染了
 
             // 核心改动：使用 requestAnimationFrame 确保在渲染后截图
             function takeScreenshot() {
                 console.log('准备截图...');
+                console.log(scene.canvas)
+                console.log(scene.renderer.getContext().getContextAttributes())
                 // requestAnimationFrame 会把我们的函数加入浏览器的渲染队列
                 // 确保在画布上有内容之后再执行
                 requestAnimationFrame(() => {
@@ -236,7 +240,19 @@ var lastTime=-1;
                 try {
                     // 绘制当前视频帧到canvas
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
+                    //先绘制到canvas上再转为图片，相比于直接从aframe的canvas上下载图片质量较差
+              /*          scene.canvas.toBlob(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'aframe-screenshot-' + Date.now() + '.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        
+                        console.log('截图已保存');
+                    }); */
                     frameCount++;
                     console.log("frameCount:"+frameCount)
                 } catch (error) {
