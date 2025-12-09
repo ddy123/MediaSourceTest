@@ -45,7 +45,7 @@
         ></a-videosphere>
 
         <a-entity 
-            camera 
+            camera="fov: 80"
             position="0 1.6 0"  
             wasd-controls="acceleration:1000" 
             look-controls 
@@ -259,7 +259,20 @@ var lastTime=-1;
                     console.error('捕获帧失败:', error);
                 }
             }
-
+ 	AFRAME.registerComponent('rotation-reader-camera', {
+				init: function () {
+					// `this.el` is the element.
+					// `object3D` is the three.js object.
+					// `rotation` is a three.js Euler using radians. `quaternion` also available.
+					// `position` is a three.js Vector3.
+                    this.threeCamera = this.el.getObject3D('camera');
+                     setInterval(() => {
+                     console.log(this.el.object3D.position);
+                     console.log(this.el.object3D.rotation);
+                     console.log(this.threeCamera.fov)
+                     }, 3000);
+				}
+			}); 
     </script>
 </body>
 </html>

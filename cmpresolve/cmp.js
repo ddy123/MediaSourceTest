@@ -10,15 +10,25 @@ const scene = new THREE.Scene()
 // textureEquirec.colorSpace = THREE.SRGBColorSpace
 // scene.background = textureEquirec
 const loader = new THREE.CubeTextureLoader()
-loader.setPath('../img/')
-const textureCube = loader.load([
+
+/*   loader.setPath('../img/')
+  const textureCube = loader.load([
 	'posx.jpg',
 	'negx.jpg',
 	'posy.jpg',
 	'negy.jpg',
 	'posz.jpg',
 	'negz.jpg',
-])
+])  */   
+   loader.setPath('../erp1/') 
+  const textureCube = loader.load([
+   'output_right.jpg',   // +X
+    'output_left.jpg',    // -X
+    'output_top.jpg',     // +Y
+    'output_bottom.jpg',  // -Y
+    'output_back.jpg',    // +Z 前
+    'output_front.jpg',   // -Z 后
+])    
 scene.background = textureCube
 const camera = new THREE.PerspectiveCamera(
 	75,
